@@ -1,10 +1,33 @@
 const express = require('express')
-const path = require('path')
 const PORT = process.env.PORT || 5000
+const bodyParser = require('body-parser');
+const app = express();
+require('dotenv').config()
 
-express()
-  .use(express.static(path.join(__dirname, 'public')))
-  .set('views', path.join(__dirname, 'views'))
-  .set('view engine', 'ejs')
-  .get('/', (req, res) => res.render('pages/index'))
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+const jsonParser = bodyParser.json();
+
+app.post('/sms', jsonParser, (req, res) => {
+  const accountSid = process.env.ACCOUNT_SID;
+  const authToken = process.env.AUTH_TOKEN;
+  const fromNumber = process.env.PHONE_NUM;
+  const toNumber = req.body.sendNumber;
+  const message = req.body.message;
+
+  const client = require('twilio')(accountSid, authToken);
+  
+  client.messages
+    .create({
+       body: message,
+       from: fromNumber,
+       to: toNumber,
+     })
+    .then(message => {
+      console.log(message.sid);
+      res.sendStatus(200);
+    })
+    .catch((err) => {
+      console.log(err)
+    res.sendStatus(500)});
+});
+
+app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
