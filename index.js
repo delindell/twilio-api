@@ -27,8 +27,8 @@ app.post('/sms', jsonParser, (req, res) => {
        from: fromNumber,
        to: toNumber,
      })
-    .then(() => res.sendStatus(200)
-    .catch(() => res.sendStatus(500);
-});
+    .then(() => res.sendStatus(200))
+    .catch(() => res.sendStatus(500))
+    });
 
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
